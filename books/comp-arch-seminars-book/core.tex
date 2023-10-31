@@ -1,0 +1,139 @@
+% Выбор класса документа
+%\documentclass {book}
+%\documentclass {article}
+\documentclass [a4paper, 12pt, oneside]{scrbook}
+% Чтобы можно было использовать русские буквы в формулах,
+%но в случае использования предупреждать об этом
+\usepackage [warn]{mathtext}
+% Выбор внутренней TEX−кодировки
+\usepackage[T2A]{fontenc}
+% Выбор кодовой страницы документа
+% Так же можно выбрать cp1251 или utf8
+\usepackage[utf8]{inputenc}
+% Выбор языка документа
+\usepackage[english,russian]{babel}
+% Начинать первый параграф
+\usepackage{indentfirst}
+
+% Загрузка пакета hyperref
+\usepackage[unicode=true] {hyperref}
+%\usepackage{url}
+\usepackage{colortbl}
+\usepackage{tabularx}
+
+\usepackage{graphicx}
+\graphicspath{{pictures/}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+%\makeatletter
+%\renewcommand*{\@biblabel}[1]{\hfill#1.}
+%\makeatother
+
+%\usepackage[backend=biber]{biblatex}
+%\addbibresource{references.bib}
+
+%установка тире для подрисуночной подписи
+\RequirePackage{caption}
+\DeclareCaptionLabelSeparator{defffis}{ --- }
+\captionsetup{justification=centering,labelsep=defffis}
+
+\usepackage{csquotes}
+\usepackage{debate}
+\usepackage[nopygments,nonumbers,noframes]{ffcode}
+\usepackage{to-be-determined}
+\usepackage{multirow}
+\usepackage{hhline}
+
+\newcommand\code[1]{\ff{#1}}
+
+% объявляем новую команду для переноса строки внутри ячейки таблицы
+\newcommand{\specialcell}[2][c]{%
+    \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+% Конец преамбулы и начало документа
+\begin {document}
+
+% Изменение начала подрисуночной надписи
+\renewcommand\figurename{Рисунок}
+
+% --- Титульная страница -----------------------------------
+
+\title{\Huge{Архитектура вычислительных систем\\ \large{Содержание семинарских занятий}}}
+\author {{\Large{А.\,И.~Легалов}}
+\and {\Large{С.\,А.~Виденин}}
+\and {\Large{К.\,И.~Пашигорев}}}
+%\date {23.07.2022}
+\maketitle
+
+% --- Оглавление -------------------------------------------
+
+\tableofcontents
+
+% Основная часть
+%\mainmatter
+
+% --- Введение -------------------------------------------
+\input{intro.tex}
+
+% --- Семинар 01 Эмулятор RARS. Первоначальное знакомство ---
+\input{seminar01.tex}
+% --- Семинар 02 Организация памяти. Методы адресации. Ветвления и переходы. Системные вызовы ---
+\input{seminar02.tex}
+% --- Семинар 03. Целочисленная арифметика. Одномерные и многомерные массивы. Простые алгоритмы ---
+\input{seminar03.tex}
+% --- Семинар 04. Семинар 04. Подпрограммы. Стек. Кадр стека. Параметры. Локальные переменные ---
+\input{seminar04.tex}
+% --- Семинар 05. Немного об ассемблере. Многофайловые программы. Директивы. Макросы ---
+\input{seminar05.tex}
+% --- Семинар 06. Математический сопроцессор. Арифметика с плавающей точкой ---
+\input{seminar06.tex}
+% --- Семинар 07. Строки символов. Обработка символьных данных. Файлы ---
+\input{seminar07.tex}
+% --- Семинар 08. Обработка исключений ---
+\input{seminar08.tex}
+% --- Семинар 09. Ввод--вывод данных. Поллинг. Программирование ввода--вывода ---
+\input{seminar09.tex}
+% --- Семинар 10. Таймер. Прерывания по таймеру ---
+\input{seminar10.tex}
+% --- Семинар 11. Программирование ввода--вывода. Использование прерываний ---
+\input{seminar11.tex}
+% --- Семинар 12. Микроархитектура. Предсказание переходов. Кеширование ---
+\input{seminar12.tex}
+% --- Семинар 13. Микроархитектура. Конвейеризация ---
+\input{seminar13.tex}
+% --- Семинар 14. Поддержка многозадачности. Виртуализация. Многоядерность ---
+\input{seminar14.tex}
+% --- Семинар 15. Мультипроцессоры. Специализированные процессоры ---
+\input{seminar15.tex}
+% --- Семинар 16. Мультипроцессоры. Специализированные процессоры ---
+\input{seminar16.tex}
+% --- Семинар 17. Мультипроцессоры. Специализированные процессоры ---
+\input{seminar17.tex}
+% --- Семинар 18. Мультипроцессоры. Специализированные процессоры ---
+\input{seminar18.tex}
+% --- Семинар 19. Мультипроцессоры. Специализированные процессоры ---
+\input{seminar19.tex}
+% --- Семинар 20. Мультипроцессоры. Специализированные процессоры ---
+\input{seminar20.tex}
+% --- Семинар 21. Мультипроцессоры. Специализированные процессоры ---
+\input{seminar21.tex}
+% --- Семинар 22. Мультипроцессоры. Специализированные процессоры ---
+\input{seminar22.tex}
+
+% --- Заключение -------------------------------------------
+\input{conclusion.tex}
+
+% --- Приложение А. Задание 1. Вычисления с плавающей точкой ---
+\input{array-tasks.tex}
+% --- Приложение Б. Задание 2. Вычисления с плавающей точкой ---
+\input{calc-tasks.tex}
+% --- Приложение В. Задание 3. Обработка строк символов ---
+\input{string-tasks.tex}
+% --- Приложение Г. Задание 4. Взаимодействие с устройствами ввода-вывода ---
+\input{inout-tasks.tex}
+
+
+% --- Библиография -------------------------------------------
+\include{ref.tex}
+
+\end {document}

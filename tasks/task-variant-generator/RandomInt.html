@@ -1,0 +1,94 @@
+<html>
+<head>
+<title>Генератор случайных чисел</title>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+</head>
+<body>
+<h2>Генерация вариантов заданий</h2>
+
+<script>
+// Генерация случайного числа в заданном диапазоне
+function randomInt(min, max) {
+    return min + ((max-min+1)*Math.random()^0);
+}
+
+// Генерация заданного числа случайных чисел и распределение их между несколькими игроками
+// Каждому игроку должно выпасть свое уникальное число
+// Количество игроков меньше или равно диапазону случайных чисел
+function Allocate(gamers, min, max) {
+    if(gamers > max-min+1) {
+        document.write("Количество участников, равное " + gamers + " превышает размер диапазона случайных чисел от " + min + " по " + max + "<br>");
+        return;
+    }
+    var variant = [];
+    i = 0;
+    while(i < gamers) {
+        variant[i] = randomInt(min, max);
+        // Поиск среди уже порожденных чисел аналогичного последнему
+        // От предпоследнего до нулевого
+        var flag = false
+        for(j = i-1; j >= 0; --j) {
+            if(variant[i]===variant[j]) {
+                // Аналог найден. Выходим из цикла, предварительно подняв флаг
+                flag = true
+                break; 
+            }
+        }
+        // Проверка флага
+        if(!flag) {
+            // Печатаем добавленное уникальное число
+            //document.write(i+1);
+            //document.write(": ");
+            document.write(variant[i]);
+            document.write("<br>");
+            // Смещаемся на новую позицию
+            i++;
+        }
+    }
+}
+
+function TestRandom() {
+    var min = 1; //parseInt(prompt("min = "));
+    var max = 7; //parseInt(prompt("max = "));
+    var d = [];
+    for(i = 0; i < max-min+1; i++) {
+        d[i] = 0;
+        document.write(d[i]);
+    }
+
+    document.write("<p>");
+    for(i = 0; i < 100; i++) {
+        var tmp = randomInt(min, max)
+        document.write(tmp);
+        d[tmp-min]++;
+    }
+
+    document.write("<p>");
+    for(i = 0; i < max-min+1; i++) {
+        document.write(min+i);
+        document.write(": ");
+        document.write(d[i]);
+        document.write("<br>");
+    }
+}
+
+document.write("<h3>Вычисление вариантов заданий</h3>");
+var num = parseInt(prompt("Количество участников:"));
+var min = parseInt(prompt("Начало диапазона:"));
+var max = parseInt(prompt("Конец диапазона:"));
+Allocate(num, min, max);
+//document.write("<p>");
+//Allocate(7, 1, 10);
+//document.write("<p>");
+//Allocate(8, 1, 7);
+//document.write("<h3>Тест генератора случайных чисел на выборке из 100 элементов</h3>");
+//document.write("<p>");
+//TestRandom();
+</script>
+
+<p>
+<b>распределение вариантов закончено</b>
+</p>
+
+</body>
+</html>

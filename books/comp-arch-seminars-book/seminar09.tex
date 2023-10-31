@@ -1,0 +1,291 @@
+\chapter[Арифметика с плавающей точкой. Продолжение]{Семинар 09. Математический сопроцессор. Арифметика с плавающей точкой. Продолжение }
+
+Продолжение темы по арифметическому сопроцессору. В данном случае искусственное разделение темы по занятиям. Часть вопросов рассмотрено в продолжении рассматрвается:
+
+На занятии предполагается рассмотреть следующие темы, связанные с управлением вычислениями в арифметическом сопроцессоре:
+\begin{enumerate}
+    \item Сравнение данных с плавающей точкой.
+    \item Команды классификации
+    \item Блок управляющих регистров
+    \item Условные операторы и fcsr
+    \item Проверка на потерю точности.
+\end{enumerate}
+
+\section{Сравнение данных с плавающей точкой}
+
+\subsubsection{Команды сравнения и анализа}
+Команды сравнения и анализа представлены в таблице~\ref{table-fp-processor-cmp}
+
+\begin{table}[h]
+    \caption{Команды сравнения и анализа}
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|}
+        \hline
+        \textbf{Команда} & \textbf{Описание} \\
+        %\hline  \multicolumn{3}{|c|}{\textbf{\textit{Арифметические}}} \\
+        \hline \verb|fclass.d t1, f1| & Classify a floating point number (64 bit) \\
+        \hline \verb|fclass.s t1, f1| & Classify a floating point number \\
+        \hline \verb|feq.d t1, f1, f2| & Floating EQuals (64 bit): if f1 = f2, set t1 to 1, else set t1 to 0 \\
+        \hline \verb|feq.s t1, f1, f2| & Floating EQuals: if f1 = f2, set t1 to 1, else set t1 to 0 \\
+        \hline \verb|fle.d t1, f1, f2| & Floating Less than or Equals (64 bit): if f1 <= f2, set t1 to 1, else set t1 to 0 \\
+        \hline \verb|fle.s t1, f1, f2| & Floating Less than or Equals: if f1 <= f2, set t1 to 1, else set t1 to 0 \\
+        \hline \verb|flt.d t1, f1, f2| & Floating Less Than (64 bit): if f1 < f2, set t1 to 1, else set t1 to 0 \\
+        \hline \verb|flt.s t1, f1, f2| & Floating Less Than: if f1 < f2, set t1 to 1, else set t1 to 0 \\
+        \hline
+    \end{tabularx}
+    \label{table-fp-processor-cmp}
+\end{table}
+
+\section{Команды классификации}
+
+Инструкция \verb|fclass.(s/d) t1, f1| проверяет значение в регистре чисел с плавающей точкой \verb|f1| и записывает в целочисленный регистр \verb|t1| 10-битную маску, указывающую класс числа с плавающей запятой. Формат маски описан в таблице~\ref{table-fclass-mask}. Соответствующий бит в t1 будет установлен, если свойство истинно, и очищен в противном случае. Все остальные биты в \verb|t1| очищаются. При этом в \verb|t1| \textbf{будет установлен только один бит}. \verb|fclass| не устанавливает флаги исключений с плавающей запятой.
+
+\begin{table}[h]
+    \caption{Биты, устанавливаемые командами классификации}
+    \centering
+    \begin{tabularx}{\textwidth}{|c|X|}
+        \hline
+        \textbf{Установленный бит} & \textbf{Свойства числа с плавающей точкой} \\
+        %\hline  \multicolumn{3}{|c|}{\textbf{\textit{Арифметические}}} \\
+        \hline \verb|0 (0x001)| & f1 --- это -$\infty$  \\
+        \hline \verb|1 (0x002)| & f1 --- это отрицительное нормализованное число \\
+        \hline \verb|2 (0x004)| & f1 --- это отрицительное денормализованное число \\
+        \hline \verb|3 (0x008)| & f1 --- это -0 \\
+        \hline \verb|4 (0x010)| & f1 --- это +0 \\
+        \hline \verb|5 (0x020)| & f1 --- это положительное денормализованное число \\
+        \hline \verb|6 (0x040)| & f1 --- это положительное нормализованное число \\
+        \hline \verb|7 (0x080)| & f1 --- это +$\infty$ \\
+        \hline \verb|8 (0x100)| & f1 --- это сигнализирующий NaN \\
+        \hline \verb|9 (0x200)| & f1 --- это тихий NaN \\
+        \hline
+    \end{tabularx}
+    \label{table-fclass-mask}
+\end{table}
+
+Можно отметить, что в отличие от целочисленной арифметики проверка результатов вычислений с плавающей точкой может играть важное значение для получения достоверных решений. Например, возможно перемножение чисел, сильно отличающихся друг от друга, что ведет к накоплению ошибки вплоть до переполнения или исчесзновения порядка. Поэтому ввод в спецпроцессор дополнительных команд контроля и классификации, обеспечивающих подобные проверки для принятия решений и управления, оправдан.
+
+Для демонстрации я создал макрос \verb|macro-is-class.mac|, который выводит информацию об этих проверках (лежит в каталоге \verb|is-class| вместе с тестовой программой). Тестовый код можно расширить, добавив туда различные варианты чисел с плавающей точкой. Для получения крайних значений можно использовать либо пересылки данных посредством их подготовки в целочисленных регистрах, либо готовить их с использованием диалогового окна (для 32-х разрядных чисел).
+
+\section{Блок управляющих регистров (общее представление)}
+
+Блок управляющих регистров (БУР) --- Control and Status Register (CSR). Более подробно будет рассматриваться при изучении новых свойств. Пока кратко применительно к арифметическому сопроцессору.
+
+RISC-V определяет отдельное адресное пространство из 4096 регистров управления и состояния, связанных с каждым портом. Регистры образуют 4K (12 битов) пространство управляющих счётчиков, флагов, масок и прочего. Имеется набор инструкций CSR, которые работают с блоком. Все инструкции CSR атомарно читают-изменяют-записывают один регистр блока, спецификатор регистра которого закодирован в 12-битном поле csr инструкции, хранящемся в битах 31–20. Это атомарные R/W инструкции типа I.
+
+В RARS часть используемых регистров отображается во вкладке <<\textbf{Control and Status}>>.
+
+Команды для работы с блоком управляющих регистров представлены в тиблице~\ref{table-csr-commands}.
+Все инструкции CSR атомарно читают--изменяют--записывают один CSR, спецификатор CSR которого закодирован в 12-битном поле csr инструкции, хранящемся в битах 31–20. Инструкции с непосредственным операндом используют 5-битную расширенную нулем непосредственную информацию, закодированную в поле rs1.
+
+\begin{table}[h]
+    \caption{Команды для работы с регистром блока управляющих регистров}
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|}
+        \hline
+        \textbf{Команда} & \textbf{Описание} \\
+        \hline \verb|csrrc t0, fcsr, t1| & Atomic Read/Clear CSR: read from the CSR into t0 and clear bits of the CSR according to t1 \\
+        \hline \verb|csrrci t0, fcsr, 10| & Atomic Read/Clear CSR Immediate: read from the CSR into t0 and clear bits of the CSR according to a constant \\
+        \hline \verb|csrrs t0, fcsr, t1| & Atomic Read/Set CSR: read from the CSR into t0 and logical or t1 into the CSR \\
+        \hline \verb|csrrsi t0, fcsr, 10| & Atomic Read/Set CSR Immediate: read from the CSR into t0 and logical or a constant into the CSR \\
+        \hline \verb|csrrw t0, fcsr, t1| & Atomic Read/Write CSR: read from the CSR into t0 and write t1 into the CSR \\
+        \hline \verb|csrrwi t0, fcsr, 10| & Atomic Read/Write CSR Immediate: read from the CSR into t0 and write a constant into the CSR \\
+        \hline
+    \end{tabularx}
+    \label{table-csr-commands}
+\end{table}
+То есть, основная идея практически всех команд заключается в сохранении читаемого состояния и в различных вариантов установки нового состояния одного из регистров.
+
+\subsection{Регистр fcsr (0x003)}
+
+Регистр \verb|fcsr| имеет следующие поля:
+
+\begin{itemize}
+    \item 5 бит --- флаги
+    \begin{itemize}
+        \item NX потеря точности
+        \item UF сверхмалое число
+        \item OF переполнение
+        \item DZ деление на 0
+        \item NV недопустимая операция
+    \end{itemize}
+    \item 3 бита --- тип округления
+    \begin{itemize}
+        \item RNE ближайшее, лучше чётное
+        \item RTZ ближайшее к нулю
+        \item RDN ближайшее к -$\infty$
+        \item RUP ближайшее к +$\infty$
+        \item RMM ближайшее, лучше с большим модулем
+        \item ...
+        \item ...
+        \item DYN не менять установленное по умолчанию (используется в инструкциях явного округления)
+    \end{itemize}
+\end{itemize}
+Для работы с регистром \verb|fcsr| используются псевдоинструкции типа \verb|f[sr]csr|. В RARS, видимо для удобства,  в отдельные регистры выделены регистры \verb|frm| и \verb|fflags|, хотя это на самом деле поля \verb|fcsr|. С \verb|fflags| используется отдельная псевдоинструкция \verb|frflags|, а \verb|frm| используется инструкция \verb|fsrm|. Соответствующие псевдоинструкции представлены в таблице~\ref{table-fcsr-pseudo}.
+
+\begin{table}[h]
+    \caption{Псевдокоманды для работы с регистром \texttt{fcsr}}
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|}
+        \hline
+        \textbf{Команда} & \textbf{Описание} \\
+        \hline \verb|frcsr t1| & Read FP control/status register \\
+        \hline \verb|frflags t1| & Read FP exception flags \\
+        \hline \verb|frrm t1| & Read FP rounding mode \\
+        \hline \verb|frsr t1| & Alias for frcsr t1 \\
+        \hline \verb|fscsr t1, t2| & Swap FP control/status register \\
+        \hline \verb|fscsr t1| & Write FP control/status register \\
+        \hline \verb|fsflags t1| & Write FP exception flags \\
+        \hline \verb|fsflags t1, t2| & Swap FP exception flags \\
+        \hline \verb|fsrm t1| & Write FP rounding mode \\
+        \hline \verb|fsrm t1, t2| & Swap FP rounding mode \\
+        \hline \verb|fssr t1| & Alias for fscsr t1 \\
+        \hline \verb|fssr t1, t2| & Alias for fscsr t1, t2 \\
+        \hline
+    \end{tabularx}
+    \label{table-fcsr-pseudo}
+\end{table}
+
+В примере \verb|round-up| приведено использование округления различными способами с использованием псевдокоманды  \verb|fsrm|:
+\begin{itemize}
+    \item по умолчанию;
+    \item в сторону 0 (явно);
+    \item в сторону минус бесконечности.
+\end{itemize}
+
+\begin{verbatim}
+    .data
+    numb:   .float  7.5
+
+    .text
+    flw     ft0 numb t0
+    fcvt.w.s a0 ft0         # По умолчанию RNE (ближайшее, чётное) = 8
+    jal     outn
+    fcvt.w.s a0 ft0 rtz     # Ближайшее к 0 = 7
+    jal     outn
+    li      t0 2            # RDN — ближайшее к -бесконечности
+    fsrm    t0
+    fcvt.w.s a0 ft0         # теперь по умолчанию RDN = 7
+    jal     outn
+    fcvt.w.s a0 ft0 dyn     # Не менять установленное по умолчанию = 7
+    jal     outn
+    fcvt.w.s a0 ft0 rne     # RNE (ближайшее, чётное) = 8
+    jal     outn
+
+    li      a7 10
+    ecall
+
+    outn:   li      a7 1
+    ecall
+    li      a0 '\n'
+    li      a7 11
+    ecall
+    ret
+\end{verbatim}
+
+\debate[Примечание]{Я расширил пример. Здесь можно выдать задание потренироваться на подстановку различных чисел: отрицательных с дробной частью больше и меньше 0.5 и т.д.}
+
+\section{Условные операторы и fcsr}
+
+Наряду с осуществление непосредственных сравнений, арифметический сопроцессор отображает своё состояние в управляющем регистре \verb|fcsr|, который входит в блок управляющих регистров \textbf{CSR (Control and Status Register)}. Использование дополнительных регистров флагов и состояний в спецпроцессорах оправдано, так как существует необходимость в выполнении быстрых проверок сразу же после выполнения их инструкций.
+
+Варианты организации условных переходов:
+\begin{itemize}
+    \item использование инструкций \verb|fCMP.P / fclas.P| с последующим переходом по содержимому целочисленного (X) регистра (0 / не 0);
+    \item использование инструкций \verb|fcsr*/frflags| с чтением всех флагов в целочисленный регистр, выделением конкретного флага инструкцией, например, \verb|andi| и условный переход по содержимому целочисленного (X) регистра (0 / не 0).
+\end{itemize}
+В любом случае условный переход неатомарен.
+
+Использование условных переходов на примере определения того, являются ли три отрезка сторонами треугольника (\verb|is-float-triangle.s|). Используются команды непосредственного сравнения на неравенство с последующим объединением результатов сравнения по \textbf{И} (все неравенства должны быть истинными).
+
+\begin{verbatim}
+    .data
+    yes:    .asciz  "It is a triangle\n"
+    no:     .asciz  "It is not a triangle\n"
+    .text
+    jal     input
+    fmv.d   fs2 fa0
+    jal     input
+    fmv.d   fs1 fa0
+    jal     input
+    fmv.d   fa1 fs1
+    fmv.d   fa2 fs2
+    jal     check
+    bnez    a0 true
+    la      a0 no
+    b       output
+    true:
+    la      a0 yes
+    output: li      a7 4
+    ecall
+    li      a7 10
+    ecall
+
+    .data
+    prompt: .ascii  "Enter triangle side: "
+    .text
+    input:
+    la      a0 prompt
+    li      a7 4
+    ecall
+    li      a7 7
+    ecall
+    ret
+
+    check:  fadd.d  ft0 fa1 fa2
+    flt.d   t0 fa0 ft0
+    fadd.d  ft1 fa2 fa0
+    flt.d   t1 fa1 ft1
+    fadd.d  ft2 fa1 fa0
+    flt.d   t2 fa2 ft2
+    and     a0 t0 t1
+    and     a0 a0 t2
+    ret
+\end{verbatim}
+
+Следующий пример демонстрирует анализ на потерю точности, возможную в вычислительных задачах (\verb|precision.s|). Вычисляется выражение \verb|(a + b) / c|.
+
+\begin{verbatim}
+    .include "macro-common.mac"
+    .data
+    Exact:  .asciz  " - это точное решение!\n"
+    Inex:   .asciz  " - результат неточный (с округлением).\n"
+
+    .text
+    print_str ("Считаем по формуле: (a + b) / c\n")
+    print_str ("a = ")
+    li      a7 6
+    ecall
+    fmv.s   fs0 fa0         # A
+    print_str ("b = ")
+    li      a7 6
+    ecall
+    fmv.s   fs1 fa0         # B
+    print_str ("c = ")
+    li      a7 6
+    ecall
+    fmv.s   fs2 fa0         # C
+
+    fadd.s  ft0 fs0 fs1
+    frflags t0              # Флаги FPU
+    andi    t0 t0 1         # Потеря точности?
+    fdiv.s  fa0 ft0 fs2
+    frflags t1              # Флаги FPU
+    andi    t1 t1 1         # Потеря точности?
+    or      s1 t0 t1        # ...хотя бы раз
+    print_str ("Result = ")
+    li      a7 2
+    ecall
+    la      a0 Inex
+    bnez    s1 out
+    la      a0 Exact
+
+    out:    li      a7 4
+    ecall
+    li      a7 10
+    ecall
+\end{verbatim}
+
+\debate[Примечание]{Для большей наглядности я подключил макробиблиотеку для вывода вспомогательных сообщений.}
+
+\debate[Примечание]{Думаю, что по объему где-то примерно здесь (может чуть раньше или позже) будет конец второго семинара по теме. Но это можно сдвигать и обсуждать полученные реальные ситуации.}
+

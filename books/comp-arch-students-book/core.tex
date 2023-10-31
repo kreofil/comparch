@@ -1,0 +1,90 @@
+% Выбор класса документа
+%\documentclass {book}
+%\documentclass {article}
+\documentclass [a4paper, 12pt, oneside]{scrbook}
+% Чтобы можно было использовать русские буквы в формулах,
+%но в случае использования предупреждать об этом
+\usepackage [warn]{mathtext}
+% Выбор внутренней TEX−кодировки
+\usepackage[T2A]{fontenc}
+% Выбор кодовой страницы документа
+% Так же можно выбрать cp1251 или utf8
+\usepackage[utf8]{inputenc}
+% Выбор языка документа
+\usepackage[english,russian]{babel}
+% Начинать первый параграф
+\usepackage{indentfirst}
+
+% Загрузка пакета hyperref
+\usepackage[unicode=true] {hyperref}
+%\usepackage{url}
+\usepackage{colortbl}
+\usepackage{tabularx}
+
+\usepackage{graphicx}
+\graphicspath{pictures/}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+%\makeatletter
+%\renewcommand*{\@biblabel}[1]{\hfill#1.}
+%\makeatother
+
+%\usepackage[backend=biber]{biblatex}
+%\addbibresource{references.bib}
+
+%установка тире для подрисуночной подписи
+\RequirePackage{caption}
+\DeclareCaptionLabelSeparator{defffis}{ --- }
+\captionsetup{justification=centering,labelsep=defffis}
+
+\usepackage{csquotes}
+\usepackage{debate}
+\usepackage[nopygments,nonumbers,noframes]{ffcode}
+\usepackage{to-be-determined}
+\usepackage{inputenc}
+
+\usepackage{longtable}
+\usepackage{hhline}
+
+\newcommand\code[1]{\ff{#1}}
+
+% Конец преамбулы и начало документа
+\begin {document}
+
+% Изменение начала подрисуночной надписи
+\renewcommand\figurename{Рисунок}
+
+% --- Титульная страница -----------------------------------
+
+\title{\Huge{Архитектура вычислительных систем\\ \large{Методические указания к самостоятельной работе студентов}}}
+
+\author {{\Large{А.\,И.~Легалов}}
+    \and {\Large{С.\,А.~Виденин}}
+    \and {\Large{К.\,И.~Пашигорев}}}
+
+%\date {13.08.2022}
+\maketitle
+
+% --- Оглавление -------------------------------------------
+
+\tableofcontents
+
+% Основная часть
+%\mainmatter
+
+% --- Введение -------------------------------------------
+\input{intro.tex}
+% --- Представление данных в вычислительных системах ---
+%\input{data.tex}
+% --- Эмулятор RARS процессора RISC-V ---
+\input{rars.tex}
+% --- Архитектура 32-х разрядного процессора RISC-V ---
+\input{risc-v-commands.tex}
+% --- Сопроцессор с плавающей точкой ---
+\input{floating-point-processor.tex}
+% --- Заключене -------------------------------------------
+\input{conclusion.tex}
+% --- Библиография -------------------------------------------
+\include{ref.tex}
+
+\end {document}

@@ -1,0 +1,93 @@
+\chapter{Сопроцессор с плавающей точкой}
+
+\section{Система команд сопроцессора}
+
+\debate[Примечание]{Думаю, что имеет смысл, как и в случае базовых команд, разбить на несколько таблиц, сгруппировав по назначению.}
+
+\begin{table}[h]
+    \caption{Базовые команды процессора RISC-V (продолжение 1)}
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|}
+        \hline
+        \textbf{Опция} & \textbf{Описание} \\
+        \hline \hline
+        \hline \verb|fadd.d f1, f2, f3, dyn| & Floating ADD (64 bit): assigns f1 to f2 + f3 \\
+        \hline \verb|fadd.s f1, f2, f3, dyn| & Floating ADD: assigns f1 to f2 + f3 \\
+        \hline \verb|fclass.d t1, f1| & Classify a floating point number (64 bit) \\
+        \hline \verb|fclass.s t1, f1| & Classify a floating point number \\
+        \hline \verb|fcvt.d.s f1, f2, dyn| & Convert a float to a double: Assigned the value of f2 to f1 \\
+        \hline \verb|fcvt.d.w f1, t1, dyn| & Convert double from integer: Assigns the value of t1 to f1 \\
+        \hline \verb|fcvt.d.wu f1, t1, dyn| & Convert double from unsigned integer: Assigns the value of t1 to f1 \\
+        \hline \verb|fcvt.s.d f1, f2, dyn| & Convert a double to a float: Assigned the value of f2 to f1 \\
+        \hline \verb|fcvt.s.w f1, t1, dyn| & Convert float from integer: Assigns the value of t1 to f1 \\
+        \hline \verb|fcvt.s.wu f1, t1, dyn| & Convert float from unsigned integer: Assigns the value of t1 to f1 \\
+        \hline \verb|fcvt.w.d t1, f1, dyn| & Convert integer from double: Assigns the value of f1 (rounded) to t1 \\
+        \hline \verb|fcvt.w.s t1, f1, dyn| & Convert integer from float: Assigns the value of f1 (rounded) to t1 \\
+        \hline \verb|fcvt.wu.d t1, f1, dyn| & Convert unsinged integer from double: Assigns the value of f1 (rounded) to t1 \\
+        \hline \verb|fcvt.wu.s t1, f1, dyn| & Convert unsinged integer from float: Assigns the value of f1 (rounded) to t1 \\
+        \hline \verb|fdiv.d f1, f2, f3, dyn| & Floating DIVide (64 bit): assigns f1 to f2 / f3 \\
+        \hline \verb|fdiv.s f1, f2, f3, dyn| & Floating DIVide: assigns f1 to f2 / f3 \\
+        \hline \verb|feq.d t1, f1, f2| & Floating EQuals (64 bit): if f1 = f2, set t1 to 1, else set t1 to 0 \\
+        \hline \verb|feq.s t1, f1, f2| & Floating EQuals: if f1 = f2, set t1 to 1, else set t1 to 0 \\
+        \hline \verb|fld f1, -100(t1)| & Load a double from memory \\
+        \hline \verb|fle.d t1, f1, f2| & Floating Less than or Equals (64 bit): if f1 <= f2, set t1 to 1, else set t1 to 0 \\
+        \hline \verb|fle.s t1, f1, f2| & Floating Less than or Equals: if f1 <= f2, set t1 to 1, else set t1 to 0 \\
+        \hline
+    \end{tabularx}
+    \label{table-base-instructions2}
+\end{table}
+
+\begin{table}[h]
+    \caption{Базовые команды процессора RISC-V (продолжение 2)}
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|}
+        \hline
+        \textbf{Опция} & \textbf{Описание} \\
+        \hline \hline
+        \hline \verb|flt.d t1, f1, f2| & Floating Less Than (64 bit): if f1 < f2, set t1 to 1, else set t1 to 0 \\
+        \hline \verb|flt.s t1, f1, f2| & Floating Less Than: if f1 < f2, set t1 to 1, else set t1 to 0 \\
+        \hline \verb|flw f1, -100(t1)| & Load a float from memory \\
+        \hline \verb|fmadd.d f1, f2, f3, f4, dynFused| & Multiply Add (64 bit): Assigns f2*f3+f4 to f1 \\
+        \hline \verb|fmadd.s f1, f2, f3, f4, dynFused| & Multiply Add: Assigns f2*f3+f4 to f1 \\
+        \hline \verb|fmax.d f1, f2, f3| & Floating MAXimum (64 bit): assigns f1 to the larger of f1 and f3 \\
+        \hline \verb|fmax.s f1, f2, f3| & Floating MAXimum: assigns f1 to the larger of f1 and f3 \\
+        \hline \verb|fmin.d f1, f2, f3| & Floating MINimum (64 bit): assigns f1 to the smaller of f1 and f3 \\
+        \hline \verb|fmin.s f1, f2, f3| & Floating MINimum: assigns f1 to the smaller of f1 and f3 \\
+        \hline \verb|fmsub.d f1, f2, f3, f4, dynFused| & Multiply Subatract: Assigns f2*f3-f4 to f1 \\
+        \hline \verb|fmsub.s f1, f2, f3, f4, dynFused| & Multiply Subatract: Assigns f2*f3-f4 to f1 \\
+        \hline \verb|fmul.d f1, f2, f3, dyn| & Floating MULtiply (64 bit): assigns f1 to f2 * f3 \\
+        \hline \verb|fmul.s f1, f2, f3, dyn| & Floating MULtiply: assigns f1 to f2 * f3 \\
+        \hline \verb|fmv.s.x f1, t1| & Move float: move bits representing a float from an integer register \\
+        \hline \verb|fmv.x.s t1, f1| & Move float: move bits representing a float to an integer register \\
+        \hline \verb|fnmadd.d f1, f2, f3, f4, dynFused| & Negate Multiply Add (64 bit): Assigns -(f2*f3+f4) to f1 \\
+        \hline \verb|fnmadd.s f1, f2, f3, f4, dynFused| & Negate Multiply Add: Assigns -(f2*f3+f4) to f1 \\
+        \hline \verb|fnmsub.d f1, f2, f3, f4, dynFused| & Negated Multiply Subatract: Assigns -(f2*f3-f4) to f1 \\
+        \hline \verb|fnmsub.s f1, f2, f3, f4, dynFused| & Negated Multiply Subatract: Assigns -(f2*f3-f4) to f1 \\
+        \hline \verb|fsd f1, -100(t1)| & Store a double to memory \\
+        \hline \verb|fsgnj.d f1, f2, f3| & Floating point sign injection (64 bit): replace the sign bit of f2 with the sign bit of f3 and assign it to f1 \\
+        \hline \verb|fsgnj.s f1, f2, f3| & Floating point sign injection: replace the sign bit of f2 with the sign bit of f3 and assign it to f1 \\
+        \hline
+    \end{tabularx}
+    \label{table-base-instructions3}
+\end{table}
+
+\begin{table}[h]
+    \caption{Базовые команды процессора RISC-V (продолжение 3)}
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|}
+        \hline
+        \textbf{Опция} & \textbf{Описание} \\
+        \hline \hline
+        \hline \verb|fsgnjn.d f1, f2, f3| & Floating point sign injection (inverted 64 bit): replace the sign bit of f2 with the opposite of sign bit of f3 and assign it to f1 \\
+        \hline \verb|fsgnjn.s f1, f2, f3| & Floating point sign injection (inverted): replace the sign bit of f2 with the opposite of sign bit of f3 and assign it to f1 \\
+        \hline \verb|fsgnjx.d f1, f2, f3| & Floating point sign injection ( 64 bit): xor the sign bit of f2 with the sign bit of f3 and assign it to f1 \\
+        \hline \verb|fsgnjx.s f1, f2, f3| & Floating point sign injection (xor): xor the sign bit of f2 with the sign bit of f3 and assign it to f1 \\
+        \hline \verb|fsqrt.d f1, f2, dyn| & Floating SQuare RooT (64 bit): Assigns f1 to the square root of f2 \\
+        \hline \verb|fsqrt.s f1, f2, dyn| & Floating SQuare RooT: Assigns f1 to the square root of f2 \\
+        \hline \verb|fsub.d f1, f2, f3, dyn| & Floating SUBtract (64 bit): assigns f1 to f2 - f3 \\
+        \hline \verb|fsub.s f1, f2, f3, dyn| & Floating SUBtract: assigns f1 to f2 - f3 \\
+        \hline \verb|fsw f1, -100(t1)| & Store a float to memory \\
+        \hline
+    \end{tabularx}
+    \label{table-base-instructions4}
+\end{table}

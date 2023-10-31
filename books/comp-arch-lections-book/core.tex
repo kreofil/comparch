@@ -1,0 +1,98 @@
+% Выбор класса документа
+%\documentclass {book}
+%\documentclass {article}
+\documentclass [a4paper, 12pt, oneside]{scrbook}
+% Чтобы можно было использовать русские буквы в формулах,
+%но в случае использования предупреждать об этом
+\usepackage [warn]{mathtext}
+% Выбор внутренней TEX−кодировки
+\usepackage[T2A]{fontenc}
+% Выбор кодовой страницы документа
+% Так же можно выбрать cp1251 или utf8
+\usepackage[utf8]{inputenc}
+% Выбор языка документа
+\usepackage[english,russian]{babel}
+% Начинать первый параграф
+\usepackage{indentfirst}
+
+% Загрузка пакета hyperref
+\usepackage[unicode=true] {hyperref}
+%\usepackage{url}
+\usepackage{colortbl}
+\usepackage{tabularx}
+
+\usepackage{graphicx}
+\graphicspath{pictures/}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+%\makeatletter
+%\renewcommand*{\@biblabel}[1]{\hfill#1.}
+%\makeatother
+
+%\usepackage[backend=biber]{biblatex}
+%\addbibresource{references.bib}
+
+%установка тире для подрисуночной подписи
+\RequirePackage{caption}
+\DeclareCaptionLabelSeparator{defffis}{ --- }
+\captionsetup{justification=centering,labelsep=defffis}
+
+\usepackage{csquotes}
+\usepackage{debate}
+\usepackage[nopygments,nonumbers,noframes]{ffcode}
+\usepackage{to-be-determined}
+\usepackage{inputenc}
+
+\newcommand\code[1]{\ff{#1}}
+
+% Конец преамбулы и начало документа
+\begin {document}
+
+% Изменение начала подрисуночной надписи
+\renewcommand\figurename{Рисунок}
+
+% --- Титульная страница -----------------------------------
+
+\title{\Huge{Архитектура вычислительных систем\\ \large{Учебное пособие}}}
+
+\author {{\Large{А.\,И.~Легалов}}
+\and {\Large{С.\,А.~Виденин}}}
+
+%\date {13.08.2022}
+\maketitle
+
+% --- Оглавление -------------------------------------------
+
+\tableofcontents
+
+% Основная часть
+%\mainmatter
+
+% --- Введение -------------------------------------------
+\input{intro.tex}
+% --- Архитектура вычислительных систем. Основные понятия ---
+\input{base.tex}
+% --- Отображение предметной области на многоуровневые архитектуры ---
+\input{dev-process.tex}
+% --- Парадигмы программирования. Отражение в архитектуре вычислительных систем ---
+\input{paradigm.tex}
+% --- Методы задания однозначности и их отражение в архитектурах ВС ---
+\input{type-using.tex}
+% --- Представление данных ---
+\input{data.tex}
+% --- Архитектуры уровня системы команд. Общие характеристики ---
+% --- Архитектура процессоров семейства RISC-V ---
+\input{risc-v-architecture.tex}
+% --- Архитектура процессоров семейства ARM ---
+\input{arm-architecture.tex}
+% --- Архитектура процессоров семейства Intel ---
+\input{intel-architecture.tex}
+% --- Внутри функции main ---
+\input{into-main.tex}
+% --- Заключене -------------------------------------------
+\input{conclusion.tex}
+
+% --- Библиография -------------------------------------------
+\include{ref.tex}
+
+\end {document}
